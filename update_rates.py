@@ -1,11 +1,14 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
-# 1. 动态获取当天的日期和具体时间
-# today_key 会变成 "2026-04-22"，明天运行就会自动变成 "2026-04-23"
-today_key = datetime.now().strftime("%Y-%m-%d")
-now_time = datetime.now().strftime("%H:%M:%S")
+# 1. 动态获取当天的日期和具体时间（强制指定 UTC+7 时区）
+# 泰国和北京时间都是 UTC+7
+tz = timezone(timedelta(hours=7)) 
+now = datetime.now(tz)
+
+today_key = now.strftime("%Y-%m-%d")
+now_time = now.strftime("%H:%M:%S")
 
 # 2. 这是你提供的最新汇率数据
 today_rates = {
@@ -27,8 +30,6 @@ if os.path.exists(history_file) and os.path.getsize(history_file) > 0:
             history_data = {}
 
 # 4. 核心逻辑：以动态日期为 Key
-# 如果今天已经运行过，这行代码会更新当天的汇率；
-# 如果今天是新的一天，这行代码会新建一个日期标题。
 history_data[today_key] = today_rates
 
 # 5. 保存回文件
@@ -39,5 +40,5 @@ with open(history_file, 'w', encoding='utf-8') as f:
 with open('rates.json', 'w', encoding='utf-8') as f:
     json.dump({"date": today_key, **today_rates}, f, indent=4, ensure_ascii=False)
 
-print(f"✅ 数据已成功同步到日期标题: {today_key}")
+print(f"✅ 数据已成功同步到日期标题: {today_key} (本地时间: {now_time})")
 
