@@ -12,9 +12,10 @@ now_time = now.strftime("%H:%M:%S")
 def get_live_rates():
     # 注意：这里必须是完整的 API 路径，不能只写域名
     urls = [
-        "https://er-api.com",
-        "https://er-api.com"
+    "https://er-api.com",
+    "https://exchangerate-api.com"
     ]
+
     
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
