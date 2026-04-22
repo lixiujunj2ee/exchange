@@ -10,7 +10,7 @@ today_key = now.strftime("%Y-%m-%d")
 now_time = now.strftime("%H:%M:%S")
 
 def get_live_rates():
-    # 定义多个备用接口，提高在 GitHub Actions 环境下的稳定性
+    # 注意：这里必须是完整的 API 路径，不能只写域名
     urls = [
         "https://er-api.com",
         "https://exchangerate-api.com"
@@ -26,7 +26,9 @@ def get_live_rates():
             response = requests.get(url, headers=headers, timeout=15)
             response.raise_for_status()
             data = response.json()
-            rates = data.get("rates", {})
+            
+            # 兼容不同 API 的返回字段 (v6 用 conversion_rates, v4 用 rates)
+            rates = data.get("rates") or data.get("conversion_rates")
             
             if rates:
                 print(f"✅ 抓取成功！数据源: {url}")
@@ -55,20 +57,22 @@ if today_rates:
             try:
                 history_data = json.load(f)
             except Exception as e:
+                print(f"读取历史文件异常: {e}")
                 history_data = {}
 
-    # 存入当天数据
+    # 存入当天数据（自动去重覆盖）
     history_data[today_key] = today_rates
 
-    # 4. 保存为 history.json
+    # 4. 保存为 history.json (用于月度列表)
     with open(history_file, 'w', encoding='utf-8') as f:
         json.dump(history_data, f, indent=4, ensure_ascii=False)
 
-    # 5. 保存为 rates.json
+    # 5. 保存为 rates.json (用于首页实时转换)
     with open('rates.json', 'w', encoding='utf-8') as f:
         json.dump({"date": today_key, **today_rates}, f, indent=4, ensure_ascii=False)
 
     print(f"🚀 动态数据更新成功: {today_key} {now_time}")
+    print(f"当前数值: {today_rates}")
 else:
     # 抛出错误让 GitHub Action 变红，从而触发邮件报警
     print("❌ 所有接口均抓取失败，终止更新。")
