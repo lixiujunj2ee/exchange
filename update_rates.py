@@ -13,7 +13,7 @@ def get_live_rates():
     # 注意：这里必须是完整的 API 路径，不能只写域名
     urls = [
         "https://er-api.com",
-        "https://exchangerate-api.com"
+        "https://er-api.com"
     ]
     
     headers = {
