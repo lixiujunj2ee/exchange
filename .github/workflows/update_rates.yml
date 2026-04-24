@@ -1,12 +1,14 @@
-name: Auto Update Exchange Rates
+name: Auto Sync History
 
 on:
+  push:
+    paths:
+      - 'rates.json'    # 核心：手机上一改这个文件，立马触发同步
   schedule:
-    # 第一次：泰国时间 00:15 (UTC 16:15)
-    - cron: '15 16 * * *'
-    # 第二次：泰国时间 10:15 (UTC 2:15)
-    - cron: '15 2 * * *'
-  workflow_dispatch: # 手动触发按钮
+    # 保持你原有的两个定时点，作为自动打卡备份
+    - cron: '15 16 * * *' # 泰国 00:15
+    - cron: '15 2 * * *'  # 泰国 10:15
+  workflow_dispatch:      # 网页上手动触发按钮
 
 jobs:
   update:
@@ -23,18 +25,16 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: 安装依赖
-        run: pip install requests
-
-      - name: 运行更新脚本
-        run: python update_rates.py
+      - name: 运行同步脚本
+        run: python sync_history.py
 
       - name: 提交并推送更改
         run: |
-          git config --local user.email "41898282+github-actions[bot]@://github.com"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          git add rates.json history.json
-          git commit -m "chore: auto sync dynamic exchange rates $(date +'%Y-%m-%d %H:%M')" || exit 0
+          # 只有 history.json 会被程序改变，rates.json 是你手动改的
+          git add history.json
+          git commit -m "chore: sync history data $(date +'%Y-%m-%d %H:%M')" || exit 0
           git push
 
