@@ -38,7 +38,10 @@ history_data[today_key] = {
     "USD_THB": current_rates.get("USD_THB", "0.00"),
     "USD_CNY": current_rates.get("USD_CNY", "0.00"),
     "USD_PHP": current_rates.get("USD_PHP", "0.00"),
-    "USD_VND": current_rates.get("USD_VND", "0.00")
+    "USD_VND": current_rates.get("USD_VND", "0.00"),
+    "USD_MYR": current_rates.get("USD_MYR", "0.00"),
+    "USD_SGD": current_rates.get("USD_SGD", "0.00"),
+    "USD_IDR": current_rates.get("USD_IDR", "0.00")
 }
 
 # 5. 全量保存 (不截断，永久留存)
